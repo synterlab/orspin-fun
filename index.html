@@ -47,17 +47,28 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Manrop
   position:relative;overflow:hidden;
   background:linear-gradient(150deg,var(--bg-card2) 0%,var(--bg-card) 100%);
   border:1px solid var(--border2);border-radius:28px;
-  padding:44px 30px 36px;
-  max-width:380px;width:100%;
-  box-shadow:0 0 0 1px rgba(255,255,255,.03),0 40px 80px rgba(0,0,0,.6),0 0 80px rgba(139,92,246,.06);
-  display:flex;flex-direction:column;align-items:center;gap:20px;
+  padding:36px 28px 28px;
+  max-width:395px;width:100%;
+  box-shadow:0 0 0 1px rgba(255,255,255,.04),0 40px 90px rgba(0,0,0,.7),0 0 110px rgba(139,92,246,.12),0 0 44px rgba(45,212,191,.07);
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+  animation:lcard-in .6s cubic-bezier(.34,1.1,.64,1) both;
 }
 .lcard::before{content:'';position:absolute;top:-80px;right:-80px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.13) 0%,transparent 70%);pointer-events:none;}
 .lcard::after{content:'';position:absolute;bottom:-60px;left:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(45,212,191,.09) 0%,transparent 70%);pointer-events:none;}
 
 .brand{display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;z-index:1;}
-.brand-logo{width:64px;height:64px;border-radius:50%;border:2px solid rgba(240,180,41,.5);box-shadow:0 0 24px rgba(240,180,41,.35),0 0 50px rgba(240,180,41,.1);object-fit:cover;}
-.brand-name{font-family:'Baloo 2',sans-serif;font-size:32px;font-weight:900;letter-spacing:-.5px;background:linear-gradient(135deg,#FFD166 0%,#F0B429 50%,#b87510 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.brand-icon{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:76px;height:76px;}
+.brand-ory{font-family:'Baloo 2',sans-serif;font-size:40px;font-weight:900;background:linear-gradient(135deg,#FFE566 0%,#F0B429 45%,#b47210 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 18px rgba(240,180,41,.7));animation:ory-pulse 2.8s ease-in-out infinite;}
+@keyframes ory-pulse{0%,100%{filter:drop-shadow(0 0 14px rgba(240,180,41,.6));}50%{filter:drop-shadow(0 0 36px rgba(240,180,41,1)) drop-shadow(0 0 70px rgba(240,180,41,.45));}}
+.orynth-badge{display:block;margin:0 auto;opacity:.95;transition:opacity .2s,transform .2s;border-radius:12px;}
+.orynth-badge:hover{opacity:1;transform:scale(1.04);}
+.builder-credit{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:var(--muted);position:relative;z-index:1;}
+.builder-credit a{color:var(--dim);text-decoration:none;font-weight:700;letter-spacing:.03em;transition:color .15s;}
+.builder-credit a:hover{color:var(--teal);}
+@keyframes lcard-in{from{opacity:0;transform:translateY(32px) scale(.96);}to{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes btn-shine{0%{left:-100%;}100%{left:220%;}}
+.btn-enter::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);width:60%;left:-100%;animation:btn-shine 2.4s ease-in-out infinite 1.2s;border-radius:inherit;}
+.brand-name{font-family:'Baloo 2',sans-serif;font-size:35px;font-weight:900;letter-spacing:-.5px;background:linear-gradient(135deg,#FFE566 0%,#FFD166 30%,#F0B429 65%,#b87510 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 14px rgba(240,180,41,.4));}
 .brand-sub{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);}
 
 .fg{width:100%;position:relative;z-index:1;}
@@ -76,7 +87,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Manrop
 .btn-enter:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(45,212,191,.55),inset 0 1px 0 rgba(255,255,255,.28);}
 .btn-enter:active{transform:translateY(2px);box-shadow:0 2px 10px rgba(45,212,191,.3),inset 0 3px 6px rgba(0,0,0,.2);}
 
-.perks{display:flex;gap:16px;position:relative;z-index:1;}
+.perks{display:flex;gap:12px;position:relative;z-index:1;flex-wrap:wrap;justify-content:center;}
 .perk{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
 .pd{width:4px;height:4px;border-radius:50%;background:var(--teal);flex-shrink:0;}
 
@@ -119,7 +130,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Manrop
   box-shadow:0 0 70px rgba(45,212,191,.4),0 0 140px rgba(45,212,191,.18),0 0 220px rgba(45,212,191,.07);
   animation:rpulse .35s ease-in-out infinite alternate;
 }
-@keyframes rpulse{from{box-shadow:0 0 55px rgba(45,212,191,.3),0 0 110px rgba(45,212,191,.12);}to{box-shadow:0 0 85px rgba(45,212,191,.5),0 0 170px rgba(45,212,191,.22);}}
+@keyframes rpulse{from{box-shadow:0 0 70px rgba(45,212,191,.45),0 0 140px rgba(45,212,191,.22),0 0 240px rgba(240,180,41,.08);}to{box-shadow:0 0 110px rgba(45,212,191,.8),0 0 220px rgba(45,212,191,.38),0 0 360px rgba(240,180,41,.14);}}
 
 /* Pointer */
 .ptr{position:absolute;top:-24px;left:50%;transform:translateX(-50%);z-index:10;transform-origin:50% -4px;}
@@ -162,6 +173,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Manrop
 .btn-spin:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 0 #7a4c08,0 14px 44px rgba(240,180,41,.68),inset 0 1px 0 rgba(255,255,255,.44);}
 .btn-spin:active:not(:disabled){transform:translateY(5px);box-shadow:0 1px 0 #7a4c08,0 3px 12px rgba(240,180,41,.3),inset 0 5px 12px rgba(0,0,0,.3);}
 .btn-spin:disabled{opacity:.42;cursor:not-allowed;transform:none;}
+.btn-spin .shine{position:absolute;top:0;left:-100%;width:55%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);border-radius:inherit;pointer-events:none;animation:btn-shine 2.4s ease-in-out infinite 0.6s;}
 
 .spin-meta{display:flex;justify-content:space-between;width:100%;padding:0 4px;}
 .s-cost{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
@@ -270,7 +282,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Manrop
 <div id="s-login" class="scr on">
 <div class="lcard">
   <div class="brand">
-    <img id="brand-logo" src="" class="brand-logo" alt="Orynth Logo" draggable="false"/>
+    <div class="brand-icon"><span class="brand-ory">ORY</span></div>
     <div class="brand-name">OrSpin.fun</div>
     <div class="brand-sub">Orynth Lucky Spin · Win ORY Tokens</div>
   </div>
@@ -287,6 +299,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Manrop
     <div class="perk"><div class="pd"></div><span>Free to play</span></div>
     <div class="perk"><div class="pd"></div><span>No wallet needed</span></div>
     <div class="perk"><div class="pd"></div><span>Win ORY tokens</span></div>
+  </div>
+  <a href="https://orynth.dev/projects/orspin" target="_blank" rel="noopener" style="display:block;text-align:center;">
+    <img class="orynth-badge" src="https://orynth.dev/api/badge/orspin?theme=light&style=default" alt="Featured on Orynth" width="200" height="62" loading="lazy"/>
+  </a>
+  <div class="builder-credit">
+    <span>Built by</span>
+    <a href="https://x.com/AlexanderRothr" target="_blank" rel="noopener">@AlexanderRothr</a>
+    <span>on</span>
+    <a href="https://x.com" target="_blank" rel="noopener" aria-label="X / Twitter">𝕏</a>
   </div>
 </div>
 </div>
@@ -358,7 +379,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Manrop
         <div class="pips" id="pips"></div>
         <span class="cb-x" id="cb-x">1×</span>
       </div>
-      <button class="btn-spin" id="btn-spin">SPIN</button>
+      <button class="btn-spin" id="btn-spin"><span class="shine"></span>SPIN</button>
       <div class="spin-meta">
         <span class="s-cost">1 ticket per spin</span>
         <span class="s-tot" id="s-tot">0 total spins</span>
@@ -440,21 +461,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Manrop
 <script>
 'use strict';
 
-/* ── ORYNTH LOGO (loaded from orynth.dev, fallback SVG) ── */
-(function loadLogo() {
-  const img = document.getElementById('brand-logo');
-  // Try loading from Orynth CDN first
-  const cdnUrl = 'https://www.orynth.dev/logo.png';
-  img.onerror = function() {
-    // Fallback: draw SVG inline
-    img.style.display = 'none';
-    const svg = document.createElement('div');
-    svg.style.cssText = 'width:64px;height:64px;border-radius:50%;border:2px solid rgba(240,180,41,.5);box-shadow:0 0 24px rgba(240,180,41,.35);background:radial-gradient(circle at 38% 30%,#FFE080,#F0B429 50%,#9a6510);display:flex;align-items:center;justify-content:center;font-family:Baloo 2,sans-serif;font-size:26px;font-weight:900;color:#08101f;';
-    svg.textContent = 'O';
-    img.parentNode.insertBefore(svg, img.nextSibling);
-  };
-  img.src = cdnUrl;
-})();
+/* ── BRAND: Orynth animated ORY icon — no external logo dependency ── */
 
 /* ── PRIZE DATA — Orynth Ecosystem Tokens ── */
 // Each coin on the wheel represents ORY (Orynth native token)
@@ -735,16 +742,19 @@ function checkAch(){
    — Phase 2 (70→100%): heavy deceleration, dramatic slow stop
    ────────────────────────────────────────────────────────── */
 function spinEase(t){
-  // Smooth blend: fast plateau then quintic-out deceleration
-  if(t<0.7){
-    // Slight acceleration from 0, then plateau
-    const s=t/0.7;
-    return 0.88*(s*s*(3-2*s)*0.15+s*0.85);
+  // Phase 1 (0→0.10): explosive acceleration burst
+  // Phase 2 (0.10→0.72): blazing full-speed plateau with micro-variation
+  // Phase 3 (0.72→1.0): heavy theatrical 7th-power deceleration
+  if(t<0.10){
+    const s=t/0.10;
+    return 0.87*(s*s*0.2+s*0.8);
+  } else if(t<0.72){
+    const s=(t-0.10)/0.62;
+    return 0.87*(0.2+s*0.80);
   } else {
-    const s=(t-0.7)/0.3;
-    // Quintic ease-out: extremely smooth final slowdown
-    const q=1-Math.pow(1-s,5);
-    return 0.88+0.12*q;
+    const s=(t-0.72)/0.28;
+    const q=1-Math.pow(1-s,7);
+    return 0.87+0.13*q;
   }
 }
 
@@ -770,11 +780,11 @@ function doSpin(){
   const curNorm=((S.angle%(2*Math.PI))+(2*Math.PI))%(2*Math.PI);
   const target=(((-Math.PI/2-(idx+.5)*SL)%(2*Math.PI))+(2*Math.PI))%(2*Math.PI);
   const delta=(target-curNorm+2*Math.PI)%(2*Math.PI);
-  const spins=6+Math.floor(Math.random()*3);
+  const spins=14+Math.floor(Math.random()*7);
   const totalRot=delta+spins*2*Math.PI;
 
   const fromAngle=S.angle;
-  const dur=rm()?50:5200+Math.random()*700;
+  const dur=rm()?50:9800+Math.random()*2200;
   const startT=performance.now();
 
   const ringEl=document.getElementById('w-outer');
@@ -783,7 +793,7 @@ function doSpin(){
   ringEl.classList.add('sp');
 
   let lastTickN=0;
-  const hubFrames=['⚡','✦','◆','✦'];
+  const hubFrames=['⚡','★','◆','✦','◈','✦','★','⚡'];
 
   function frame(now){
     const elapsed=now-startT;
@@ -803,7 +813,7 @@ function doSpin(){
     }
 
     // Hub animation during spin
-    hubEl.textContent=hubFrames[Math.floor(elapsed/110)%4];
+    hubEl.textContent=hubFrames[Math.floor(elapsed/75)%hubFrames.length];
 
     if(t<1){
       spinRAF=requestAnimationFrame(frame);
@@ -870,7 +880,7 @@ function collect(){
   else{
     earnedORY=Math.round(actual.amt*fMult);
     S.bal+=earnedORY;S.earned+=earnedORY;
-    if(actual.tier==='jackpot'){S.jackpots++;spawnParticles(28);}
+    if(actual.tier==='jackpot'){S.jackpots++;spawnParticles(52);}else if(actual.tier==='rare'){spawnParticles(20);}
     S.combo=Math.min(S.combo+1,5);
     if(S.combo>S.maxCombo)S.maxCombo=S.combo;
   }
@@ -916,8 +926,8 @@ function spawnParticles(n){
   const cols=['#FFD166','#2DD4BF','#F87171','#8B5CF6','#F1F5F9'];
   for(let i=0;i<n;i++){
     const p=document.createElement('div');p.className='par';
-    const sz=5+Math.random()*5;
-    p.style.cssText='left:'+(22+Math.random()*56)+'%;top:'+(innerHeight*.25+Math.random()*90)+'px;width:'+sz+'px;height:'+sz+'px;background:'+cols[i%cols.length]+';animation-duration:'+(0.7+Math.random()*.9)+'s;animation-delay:'+(Math.random()*.3)+'s;transform:rotate('+(Math.random()*360)+'deg);';
+    const sz=6+Math.random()*8;
+    p.style.cssText='left:'+(10+Math.random()*80)+'%;top:'+(innerHeight*.18+Math.random()*120)+'px;width:'+sz+'px;height:'+sz+'px;background:'+cols[i%cols.length]+';animation-duration:'+(0.8+Math.random()*1.1)+'s;animation-delay:'+(Math.random()*.45)+'s;transform:rotate('+(Math.random()*360)+'deg);border-radius:'+(Math.random()>.5?'50%':'3px')+';';
     document.body.appendChild(p);setTimeout(()=>p.remove(),1900);
   }
 }
