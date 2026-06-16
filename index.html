@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>OrSpin.fun — Spin. Win. Collect.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  /* ── CSS Custom Properties ─────────────────────────────────── */
+  :root {
+    --bg-deep: #0B1226;
+    --bg-panel: #16213E;
+    --bg-panel2: #1a2847;
+    --accent-gold: #E8A33D;
+    --accent-teal: #2EC4B6;
+    --accent-coral: #FF6B6B;
+    --text-light: #F4F4F2;
+    --text-dim: #8C9AB5;
+    --border: rgba(44,196,182,0.18);
+    --glow-teal: 0 0 18px rgba(46,196,182,0.45);
+    --glow-gold: 0 0 18px rgba(232,163,61,0.5);
+    --glow-coral: 0 0 18px rgba(255,107,107,0.55);
+    --radius: 16px;
+    --spin-duration: 4s;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg-deep);
+    color: var(--text-light);
+    font-family: 'Manrope', sans-serif;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ── Screens ───────────────────────────────────────────────── */
+  .screen { display: none; position: fixed; inset: 0; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ── FOCUS STATES ──────────────────────────────────────────── */
+  :focus-visible { outline: 2px solid var(--accent-teal); outline-offset: 3px; border-radius: 6px; }
+
+  /* ═══════════════════════════════════════════════════════════
+     LOGIN SCREEN
+  ═══════════════════════════════════════════════════════════ */
+  #screen-login {
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse 80% 60% at 50% 30%, #0d1f45 0%, var(--bg-deep) 70%);
+  }
+
+  .login-bg-glow {
+    position: absolute;
+    width: 420px; height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(46,196,182,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -60%);
+    pointer-events: none;
+  }
+
+  .login-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    padding: 48px 36px 40px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+    max-width: 360px;
+    width: 90%;
+  }
+
+  /* OrSpin Logo (SVG wordmark) */
+  .logo-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+  .logo-tagline {
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .login-description {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 260px;
+  }
+
+  .btn-connect {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--bg-deep);
+    background: linear-gradient(135deg, var(--accent-teal) 0%, #22a99d 100%);
+    border: none;
+    border-radius: 14px;
+    padding: 15px 40px;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 0.12s, box-shadow 0.12s;
+    box-shadow: 0 4px 20px rgba(46,196,182,0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+    letter-spacing: 0.02em;
+  }
+  .btn-connect:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(46,196,182,0.55), inset 0 1px 0 rgba(255,255,255,0.25); }
+  .btn-connect:active { transform: translateY(1px); box-shadow: 0 2px 10px rgba(46,196,182,0.3), inset 0 2px 4px rgba(0,0,0,0.2); }
+  .btn-connect:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+  .login-note {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: center;
+    opacity: 0.7;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     MAIN SPIN SCREEN
+  ═══════════════════════════════════════════════════════════ */
+  #screen-main {
+    background: var(--bg-deep);
+    overflow: hidden;
+  }
+
+  /* ── Top Bar ────────────────────────────────────────────── */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px 12px;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    gap: 12px;
+  }
+
+  .user-info { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-teal), #1a7a75);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--bg-deep);
+    flex-shrink: 0;
+    border: 2px solid rgba(46,196,182,0.4);
+  }
+
+  .wallet-addr {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 110px;
+  }
+
+  .top-stats {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+  }
+
+  .stat-icon { font-size: 14px; }
+
+  .stat-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-light);
+  }
+
+  .stat-val.gold { color: var(--accent-gold); }
+  .stat-val.teal { color: var(--accent-teal); }
+
+  .top-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+    min-width: 44px; min-height: 44px;
+  }
+  .icon-btn:hover { color: var(--accent-teal); border-color: var(--accent-teal); background: rgba(46,196,182,0.07); }
+
+  /* ── Portrait Layout ─────────────────────────────────────── */
+  .main-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 16px 24px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── Wheel Area ──────────────────────────────────────────── */
+  .wheel-wrap {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .wheel-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Outer glow ring */
+  .wheel-glow-ring {
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    background: transparent;
+    border: 2px solid rgba(46,196,182,0.15);
+    box-shadow: 0 0 30px rgba(46,196,182,0.2), inset 0 0 30px rgba(46,196,182,0.05);
+    pointer-events: none;
+    transition: box-shadow 0.4s;
+  }
+  .wheel-glow-ring.spinning {
+    box-shadow: 0 0 60px rgba(46,196,182,0.5), inset 0 0 30px rgba(46,196,182,0.1);
+  }
+
+  #wheel-canvas {
+    border-radius: 50%;
+    display: block;
+    cursor: pointer;
+    box-shadow: 0 0 0 4px var(--bg-panel), 0 0 0 6px rgba(46,196,182,0.25);
+  }
+
+  /* Wheel pointer */
+  .wheel-pointer {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 28px solid var(--accent-gold);
+    filter: drop-shadow(0 2px 8px rgba(232,163,61,0.7));
+    z-index: 10;
+  }
+
+  /* Center hub */
+  .wheel-hub {
+    position: absolute;
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #2a3d6e, #0f1a35);
+    border: 3px solid var(--accent-teal);
+    box-shadow: 0 0 12px rgba(46,196,182,0.5), inset 0 1px 2px rgba(255,255,255,0.1);
+    z-index: 5;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+
+  .wheel-hub-icon { font-size: 22px; }
+
+  /* ── Spin Button ─────────────────────────────────────────── */
+  .spin-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .btn-spin {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--bg-deep);
+    background: linear-gradient(135deg, #FFD166 0%, var(--accent-gold) 50%, #c47d1a 100%);
+    border: none;
+    border-radius: 18px;
+    padding: 16px 0;
+    width: 100%;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    box-shadow: 0 4px 0 #7a4d0a, 0 6px 24px rgba(232,163,61,0.45), inset 0 1px 0 rgba(255,255,255,0.35);
+    transition: transform 0.1s, box-shadow 0.1s;
+    min-height: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-spin::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 50%);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .btn-spin:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 0 #7a4d0a, 0 10px 32px rgba(232,163,61,0.55), inset 0 1px 0 rgba(255,255,255,0.35); }
+  .btn-spin:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #7a4d0a, 0 3px 14px rgba(232,163,61,0.3), inset 0 3px 6px rgba(0,0,0,0.2); }
+  .btn-spin:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: 0 4px 0 #7a4d0a, 0 6px 24px rgba(232,163,61,0.2), inset 0 1px 0 rgba(255,255,255,0.2); }
+
+  .spin-cost-note {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     LANDSCAPE REFLOW
+  ═══════════════════════════════════════════════════════════ */
+  @media (orientation: landscape) and (max-height: 600px) {
+    .top-bar { padding: 10px 20px 8px; }
+    .wallet-addr { max-width: 80px; }
+
+    .main-body {
+      flex-direction: row;
+      align-items: stretch;
+      padding: 12px;
+      gap: 16px;
+    }
+
+    .wheel-wrap {
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .spin-section {
+      width: 180px;
+      max-width: 180px;
+      flex: none;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     MODALS
+  ═══════════════════════════════════════════════════════════ */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .modal {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 32px 28px 28px;
+    max-width: 360px;
+    width: 100%;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+    animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .modal-title {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-light);
+    margin-bottom: 6px;
+  }
+
+  .modal-subtitle {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .modal-actions { display: flex; flex-direction: column; gap: 10px; }
+
+  .btn-modal-primary {
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--bg-deep);
+    background: linear-gradient(135deg, var(--accent-teal), #22a99d);
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    cursor: pointer;
+    width: 100%;
+    min-height: 48px;
+    box-shadow: 0 4px 16px rgba(46,196,182,0.35);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .btn-modal-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(46,196,182,0.5); }
+  .btn-modal-primary:active { transform: translateY(1px); }
+
+  .btn-modal-secondary {
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+    width: 100%;
+    min-height: 48px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .btn-modal-secondary:hover { color: var(--text-light); border-color: rgba(44,196,182,0.4); }
+
+  /* ── Win Modal ──────────────────────────────────────────── */
+  .win-coin-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .win-coin {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: default;
+  }
+
+  .win-coin .coin-symbol {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--bg-deep);
+    opacity: 0.85;
+  }
+
+  .win-coin .coin-amount {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--bg-deep);
+    line-height: 1;
+  }
+
+  .win-amount-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent-gold);
+    text-shadow: 0 0 20px rgba(232,163,61,0.6);
+  }
+
+  /* ── History Modal ───────────────────────────────────────── */
+  .history-list {
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    gap: 12px;
+  }
+
+  .history-item .hi-info { flex: 1; min-width: 0; }
+  .history-item .hi-prize {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .history-item .hi-time {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+  .hi-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .history-empty {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 14px;
+    padding: 24px 0;
+  }
+
+  /* ── Out of Tickets Modal ────────────────────────────────── */
+  .oot-icon {
+    font-size: 48px;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  /* ── Logout Confirm Chip ─────────────────────────────────── */
+  .logout-chip {
+    display: none;
+    position: fixed;
+    top: 72px;
+    right: 16px;
+    background: var(--bg-panel2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    gap: 10px;
+    align-items: center;
+    z-index: 200;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: slideUp 0.15s ease;
+  }
+  .logout-chip.open { display: flex; }
+
+  .logout-chip span { font-size: 13px; color: var(--text-dim); }
+  .logout-chip-actions { display: flex; gap: 8px; }
+
+  .lc-btn {
+    font-size: 12px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    min-height: 32px;
+    transition: opacity 0.15s;
+  }
+  .lc-btn:hover { opacity: 0.85; }
+  .lc-btn.confirm { background: var(--accent-coral); color: #fff; }
+  .lc-btn.cancel { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
+
+  /* ── Mint/Vault Animation ────────────────────────────────── */
+  .mint-coin {
+    position: fixed;
+    z-index: 999;
+    pointer-events: none;
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--bg-deep);
+  }
+
+  @keyframes mintFlip {
+    0%   { transform: scale(1) rotateY(0deg); opacity: 1; }
+    40%  { transform: scale(1.3) rotateY(90deg); opacity: 1; }
+    50%  { transform: scale(1.3) rotateY(90deg); opacity: 1; }
+    80%  { transform: scale(0.5) rotateY(0deg) translateY(-80px); opacity: 0.8; }
+    100% { transform: scale(0.1) rotateY(0deg) translateY(-160px); opacity: 0; }
+  }
+
+  @keyframes balancePop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.35); color: var(--accent-gold); }
+    100% { transform: scale(1); }
+  }
+
+  .balance-pop { animation: balancePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+  /* ── Spin Easing ─────────────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    :root { --spin-duration: 0.01s; }
+    .modal { animation: none; }
+    .logout-chip { animation: none; }
+    .modal-overlay { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LOGIN SCREEN
+═══════════════════════════════════════════════════════════ -->
+<div id="screen-login" class="screen active">
+  <div class="login-bg-glow"></div>
+  <div class="login-card">
+    <div class="logo-wrap">
+      <!-- Custom SVG wordmark -->
+      <svg width="200" height="56" viewBox="0 0 200 56" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="OrSpin.fun logo">
+        <!-- Coin circle O -->
+        <circle cx="28" cy="28" r="26" fill="url(#coinGrad)" stroke="url(#rimGrad)" stroke-width="2.5"/>
+        <circle cx="28" cy="28" r="19" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+        <text x="28" y="35" font-family="'Baloo 2',sans-serif" font-size="20" font-weight="800" fill="#0B1226" text-anchor="middle">O</text>
+        <!-- Wordmark text -->
+        <text x="62" y="38" font-family="'Baloo 2',sans-serif" font-size="30" font-weight="800" fill="#F4F4F2" letter-spacing="-0.5">rSpin</text>
+        <text x="136" y="38" font-family="'Baloo 2',sans-serif" font-size="30" font-weight="800" fill="url(#dotGrad)">.</text>
+        <text x="147" y="38" font-family="'Baloo 2',sans-serif" font-size="30" font-weight="800" fill="url(#funGrad)">fun</text>
+        <defs>
+          <radialGradient id="coinGrad" cx="35%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#FFD166"/>
+            <stop offset="60%" stop-color="#E8A33D"/>
+            <stop offset="100%" stop-color="#b06e1a"/>
+          </radialGradient>
+          <linearGradient id="rimGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FFD166"/>
+            <stop offset="1" stop-color="#7a4d0a"/>
+          </linearGradient>
+          <linearGradient id="dotGrad" x1="0" y1="0" x2="0" y2="40" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2EC4B6"/>
+            <stop offset="1" stop-color="#1a8880"/>
+          </linearGradient>
+          <linearGradient id="funGrad" x1="0" y1="0" x2="0" y2="40" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#2EC4B6"/>
+            <stop offset="1" stop-color="#1a8880"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="logo-tagline">Spin. Win. Collect.</span>
+    </div>
+    <p class="login-description">Connect your wallet to enter the vault. Spin the wheel, win Orynth tokens, watch them mint into your balance.</p>
+    <button class="btn-connect" id="btn-connect">Connect &amp; Play</button>
+    <p class="login-note">Phantom wallet supported · Demo prizes · No real payouts</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN SPIN SCREEN
+═══════════════════════════════════════════════════════════ -->
+<div id="screen-main" class="screen">
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="user-info">
+      <div class="avatar" id="user-avatar">?</div>
+      <span class="wallet-addr" id="wallet-addr">connecting...</span>
+    </div>
+    <div class="top-stats">
+      <div class="stat-pill" title="ORY balance">
+        <span class="stat-icon">🪙</span>
+        <span class="stat-val gold" id="balance-display">0</span>
+      </div>
+      <div class="stat-pill" title="Tickets">
+        <span class="stat-icon">🎟</span>
+        <span class="stat-val teal" id="tickets-display">0</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="btn-history" title="Spin history" aria-label="View spin history">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-6.28"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-logout" title="Logout" aria-label="Log out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Logout confirm chip -->
+  <div class="logout-chip" id="logout-chip">
+    <span>Log out?</span>
+    <div class="logout-chip-actions">
+      <button class="lc-btn cancel" id="btn-logout-cancel">Cancel</button>
+      <button class="lc-btn confirm" id="btn-logout-confirm">Log out</button>
+    </div>
+  </div>
+
+  <!-- Main body -->
+  <div class="main-body">
+    <div class="wheel-wrap">
+      <div class="wheel-container" id="wheel-container">
+        <div class="wheel-pointer"></div>
+        <canvas id="wheel-canvas" width="300" height="300"></canvas>
+        <div class="wheel-glow-ring" id="wheel-glow-ring"></div>
+        <div class="wheel-hub"><span class="wheel-hub-icon">⚡</span></div>
+      </div>
+    </div>
+
+    <div class="spin-section">
+      <button class="btn-spin" id="btn-spin">SPIN</button>
+      <span class="spin-cost-note" id="spin-cost-note">1 ticket per spin</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODALS
+═══════════════════════════════════════════════════════════ -->
+
+<!-- Out of Tickets -->
+<div class="modal-overlay" id="modal-oot" role="dialog" aria-modal="true" aria-labelledby="oot-title">
+  <div class="modal">
+    <div class="oot-icon">🎟</div>
+    <div class="modal-title" id="oot-title">Out of Tickets</div>
+    <div class="modal-subtitle">You've used all your spins. Top up to keep playing.</div>
+    <div class="modal-actions">
+      <button class="btn-modal-primary" id="btn-buy-tickets">Buy 5 Tickets — 500 ORY</button>
+      <button class="btn-modal-secondary" id="btn-watch-ad">Watch for 1 Free Ticket</button>
+      <button class="btn-modal-secondary" id="btn-oot-close">Maybe later</button>
+    </div>
+  </div>
+</div>
+
+<!-- Win Modal -->
+<div class="modal-overlay" id="modal-win" role="dialog" aria-modal="true" aria-labelledby="win-title">
+  <div class="modal" id="win-modal-inner">
+    <div class="win-coin-display">
+      <div class="win-coin" id="win-coin-vis"></div>
+      <div class="win-amount-text" id="win-amount-text"></div>
+    </div>
+    <div class="modal-title" id="win-title" style="text-align:center;margin-bottom:6px"></div>
+    <div class="modal-subtitle" id="win-subtitle" style="text-align:center;margin-bottom:20px"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-primary" id="btn-collect">Collect</button>
+      <button class="btn-modal-secondary" id="btn-spin-again">Spin again</button>
+    </div>
+  </div>
+</div>
+
+<!-- History Modal -->
+<div class="modal-overlay" id="modal-history" role="dialog" aria-modal="true" aria-labelledby="history-title">
+  <div class="modal">
+    <div class="modal-title" id="history-title">Spin History</div>
+    <div class="modal-subtitle">Your session spins</div>
+    <div class="history-list" id="history-list"></div>
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn-modal-secondary" id="btn-history-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════
+// EDIT ME: replace with live Orynth token data
+// ═══════════════════════════════════════════════════════════
+const PRIZES = [
+  { symbol: "ORY",     label: "50 ORY",       amount: 50,   weight: 10, tier: "common"  },
+  { symbol: "ORY",     label: "100 ORY",       amount: 100,  weight: 8,  tier: "common"  },
+  { symbol: "ORY",     label: "300 ORY",       amount: 300,  weight: 4,  tier: "rare"    },
+  { symbol: "ORY",     label: "1000 ORY",      amount: 1000, weight: 1,  tier: "jackpot" },
+  { symbol: "TICKET",  label: "+1 Ticket",     amount: 1,    weight: 6,  tier: "common"  },
+  { symbol: "ORY",     label: "20 ORY",        amount: 20,   weight: 12, tier: "common"  },
+  { symbol: "ORY",     label: "500 ORY",       amount: 500,  weight: 2,  tier: "rare"    },
+  { symbol: "MYSTERY", label: "Mystery Coin",  amount: 0,    weight: 5,  tier: "rare"    },
+];
+
+// Starting state
+const STARTING_BALANCE = 2000;
+const STARTING_TICKETS = 3;
+const TICKET_COST_ORY  = 500;
+const TICKETS_PER_BUY  = 5;
+
+// ═══════════════════════════════════════════════════════════
+// TIER VISUAL CONFIG
+// ═══════════════════════════════════════════════════════════
+const TIER_CONFIG = {
+  common:  { glow: 'rgba(46,196,182,0.7)',  rim: '#2EC4B6', inner: '#1a7a75', label: '#F4F4F2' },
+  rare:    { glow: 'rgba(232,163,61,0.8)',  rim: '#E8A33D', inner: '#b06e1a', label: '#F4F4F2' },
+  jackpot: { glow: 'rgba(255,107,107,0.9)', rim: '#FF6B6B', inner: '#cc3333', label: '#F4F4F2' },
+};
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let state = {
+  loggedIn: false,
+  walletAddr: '',
+  balance: STARTING_BALANCE,
+  tickets: STARTING_TICKETS,
+  history: [],
+  spinning: false,
+  pendingPrize: null,
+  wheelAngle: 0,
+};
+
+// ═══════════════════════════════════════════════════════════
+// UTILITY
+// ═══════════════════════════════════════════════════════════
+function weightedRandom(prizes) {
+  const total = prizes.reduce((s, p) => s + p.weight, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < prizes.length; i++) {
+    r -= prizes[i].weight;
+    if (r <= 0) return i;
+  }
+  return prizes.length - 1;
+}
+
+function genWalletAddr() {
+  const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  let a = '';
+  for (let i = 0; i < 4; i++) a += chars[Math.floor(Math.random() * chars.length)];
+  let b = '';
+  for (let i = 0; i < 4; i++) b += chars[Math.floor(Math.random() * chars.length)];
+  return `${a}...${b}`;
+}
+
+function fmt(n) {
+  return n.toLocaleString();
+}
+
+function timeStr() {
+  const now = new Date();
+  return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+function getTierColor(tier) {
+  return TIER_CONFIG[tier] || TIER_CONFIG.common;
+}
+
+function reducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+// ═══════════════════════════════════════════════════════════
+// WHEEL DRAWING
+// ═══════════════════════════════════════════════════════════
+const canvas  = document.getElementById('wheel-canvas');
+const ctx     = canvas.getContext('2d');
+const N       = PRIZES.length;
+const SLICE   = (2 * Math.PI) / N;
+
+function resizeWheel() {
+  const wrap = document.getElementById('wheel-container');
+  const avail = Math.min(
+    wrap.parentElement.offsetWidth - 32,
+    wrap.parentElement.offsetHeight - 80,
+    320
+  );
+  const size = Math.max(avail, 220);
+  canvas.width  = size;
+  canvas.height = size;
+  drawWheel(state.wheelAngle);
+}
+
+function drawWheel(angle) {
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2, R = W / 2 - 4;
+  ctx.clearRect(0, 0, W, H);
+
+  PRIZES.forEach((prize, i) => {
+    const start = angle + i * SLICE - Math.PI / 2;
+    const end   = start + SLICE;
+    const tc    = getTierColor(prize.tier);
+    const mid   = start + SLICE / 2;
+
+    // ── Coin tile wedge background ──────────────────────────
+    // Radial gradient for beveled coin depth
+    const grd = ctx.createRadialGradient(
+      cx + Math.cos(mid) * R * 0.4, cy + Math.sin(mid) * R * 0.4, 0,
+      cx, cy, R
+    );
+    const baseColor = i % 2 === 0 ? '#16213E' : '#111d38';
+    grd.addColorStop(0,   lighten(tc.inner, 0.22));
+    grd.addColorStop(0.6, baseColor);
+    grd.addColorStop(1,   '#0B1226');
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, R, start, end);
+    ctx.closePath();
+    ctx.fillStyle = grd;
+    ctx.fill();
+
+    // Slice dividers
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, R, start, end);
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(11,18,38,0.9)';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Rim arc glow
+    ctx.beginPath();
+    ctx.arc(cx, cy, R - 2, start, end);
+    ctx.strokeStyle = tc.rim;
+    ctx.lineWidth = 3;
+    ctx.globalAlpha = 0.55;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // ── Beveled coin face ────────────────────────────────────
+    // Inner raised coin circle
+    const coinR  = R * 0.28;
+    const coinCx = cx + Math.cos(mid) * R * 0.6;
+    const coinCy = cy + Math.sin(mid) * R * 0.6;
+
+    // Shadow (depth)
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(coinCx + 2, coinCy + 2, coinR, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fill();
+    ctx.restore();
+
+    // Coin body gradient
+    const coinGrd = ctx.createRadialGradient(
+      coinCx - coinR * 0.3, coinCy - coinR * 0.3, coinR * 0.1,
+      coinCx, coinCy, coinR
+    );
+    coinGrd.addColorStop(0,    lighten(tc.rim, 0.4));
+    coinGrd.addColorStop(0.5,  tc.rim);
+    coinGrd.addColorStop(1,    tc.inner);
+
+    ctx.beginPath();
+    ctx.arc(coinCx, coinCy, coinR, 0, Math.PI * 2);
+    ctx.fillStyle = coinGrd;
+    ctx.fill();
+
+    // Coin rim bevel (inner highlight)
+    ctx.beginPath();
+    ctx.arc(coinCx, coinCy, coinR - 1, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Coin inset shadow
+    ctx.beginPath();
+    ctx.arc(coinCx, coinCy, coinR, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Tier glow on coin
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(coinCx, coinCy, coinR + 3, 0, Math.PI * 2);
+    ctx.strokeStyle = tc.glow;
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.6;
+    ctx.stroke();
+    ctx.restore();
+
+    // ── Text on coin ─────────────────────────────────────────
+    ctx.save();
+    ctx.translate(coinCx, coinCy);
+    ctx.fillStyle = '#0B1226';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    if (prize.symbol === 'MYSTERY') {
+      ctx.font = `bold ${coinR * 0.9}px 'Space Mono', monospace`;
+      ctx.fillText('?', 0, 0);
+    } else {
+      ctx.font = `bold ${coinR * 0.55}px 'Space Mono', monospace`;
+      ctx.fillText(prize.symbol, 0, -coinR * 0.22);
+      ctx.font = `700 ${coinR * 0.5}px 'Baloo 2', sans-serif`;
+      const label = prize.amount > 0 ? String(prize.amount) : prize.label;
+      ctx.fillText(label.length > 5 ? label.slice(0,5) : label, 0, coinR * 0.28);
+    }
+    ctx.restore();
+  });
+
+  // Outer decorative ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(46,196,182,0.35)';
+  ctx.lineWidth = 4;
+  ctx.stroke();
+}
+
+// Simple color helpers
+function lighten(hex, amt) {
+  const num = parseInt(hex.replace('#',''), 16);
+  const r = Math.min(255, ((num >> 16) & 255) + Math.round(255 * amt));
+  const g = Math.min(255, ((num >> 8)  & 255) + Math.round(255 * amt));
+  const b = Math.min(255, ( num        & 255) + Math.round(255 * amt));
+  return `rgb(${r},${g},${b})`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// UI UPDATES
+// ═══════════════════════════════════════════════════════════
+function updateUI() {
+  document.getElementById('balance-display').textContent = fmt(state.balance);
+  document.getElementById('tickets-display').textContent = state.tickets;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════
+async function doLogin() {
+  const btn = document.getElementById('btn-connect');
+  btn.disabled = true;
+  btn.textContent = 'Connecting…';
+
+  await new Promise(r => setTimeout(r, 900));
+
+  let addr = genWalletAddr();
+
+  // Try Phantom wallet if available
+  try {
+    if (window.solana && window.solana.isPhantom) {
+      const resp = await window.solana.connect({ onlyIfTrusted: false });
+      const pk = resp.publicKey.toString();
+      addr = pk.slice(0, 4) + '...' + pk.slice(-4);
+    }
+  } catch (_) { /* graceful fallback */ }
+
+  state.loggedIn   = true;
+  state.walletAddr = addr;
+  state.balance    = STARTING_BALANCE;
+  state.tickets    = STARTING_TICKETS;
+  state.history    = [];
+
+  // Try restore from localStorage
+  try {
+    const saved = JSON.parse(localStorage.getItem('orspin_session') || 'null');
+    if (saved && saved.walletAddr === addr) {
+      state.balance = saved.balance;
+      state.tickets = saved.tickets;
+      state.history = saved.history || [];
+    }
+  } catch (_) {}
+
+  document.getElementById('wallet-addr').textContent = addr;
+  document.getElementById('user-avatar').textContent  = addr[0].toUpperCase();
+
+  updateUI();
+  showScreen('screen-main');
+  resizeWheel();
+
+  btn.disabled = false;
+  btn.textContent = 'Connect & Play';
+}
+
+function doLogout() {
+  state.loggedIn = false;
+  state.pendingPrize = null;
+  state.spinning = false;
+  closeLogoutChip();
+  showScreen('screen-login');
+}
+
+function saveSession() {
+  try {
+    localStorage.setItem('orspin_session', JSON.stringify({
+      walletAddr: state.walletAddr,
+      balance: state.balance,
+      tickets: state.tickets,
+      history: state.history,
+    }));
+  } catch (_) {}
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOGOUT CHIP
+// ═══════════════════════════════════════════════════════════
+function openLogoutChip() {
+  document.getElementById('logout-chip').classList.add('open');
+}
+function closeLogoutChip() {
+  document.getElementById('logout-chip').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════════════
+// SPIN LOGIC
+// ═══════════════════════════════════════════════════════════
+function spinWheel() {
+  if (state.spinning) return;
+  if (state.tickets <= 0) { openModal('modal-oot'); return; }
+
+  state.spinning = true;
+  state.tickets -= 1;
+  updateUI();
+
+  const prizeIdx  = weightedRandom(PRIZES);
+  const prize     = PRIZES[prizeIdx];
+  state.pendingPrize = { prize, prizeIdx };
+
+  // Calculate target angle so pointer (top) lands on prizeIdx wedge
+  // Pointer is at top = -90°, wedge i starts at i * SLICE
+  // Center of wedge i = (i + 0.5) * SLICE
+  // We want: wheelAngle + center_of_wedge_i = -PI/2 (top)
+  // => targetAngle = -PI/2 - (prizeIdx + 0.5) * SLICE + multiple full rotations
+  const currentAngle = state.wheelAngle % (2 * Math.PI);
+  const targetOffset = -Math.PI / 2 - (prizeIdx + 0.5) * SLICE;
+  // Normalise
+  const normalised  = ((targetOffset % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+  const spins       = 5 + Math.floor(Math.random() * 3); // 5-7 full rotations
+  const finalAngle  = normalised + spins * 2 * Math.PI;
+
+  const startAngle    = state.wheelAngle;
+  const deltaAngle    = finalAngle - (startAngle % (Math.PI * 2)) + (startAngle - (startAngle % (Math.PI * 2)));
+
+  // Corrected: spin from current to final
+  const totalDelta = finalAngle - currentAngle + spins * 2 * Math.PI;
+
+  // Use raw accumulated angle
+  const fromAngle = state.wheelAngle;
+  const toAngle   = fromAngle + (finalAngle - currentAngle) + spins * 2 * Math.PI;
+
+  const dur = reducedMotion() ? 1 : 4000;
+  const start = performance.now();
+
+  document.getElementById('wheel-glow-ring').classList.add('spinning');
+  document.getElementById('btn-spin').disabled = true;
+
+  function animate(now) {
+    const elapsed = now - start;
+    const t = Math.min(elapsed / dur, 1);
+
+    // Cubic bezier deceleration: fast start, slow end — no bounce
+    const ease = 1 - Math.pow(1 - t, 4);
+    const angle = fromAngle + (toAngle - fromAngle) * ease;
+
+    state.wheelAngle = angle;
+    drawWheel(angle);
+
+    if (t < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      state.wheelAngle = toAngle;
+      drawWheel(toAngle);
+      onSpinComplete(prize, prizeIdx);
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+function onSpinComplete(prize, prizeIdx) {
+  state.spinning = false;
+  document.getElementById('wheel-glow-ring').classList.remove('spinning');
+
+  // Small delay before showing win modal
+  setTimeout(() => showWinModal(prize), 350);
+}
+
+// ═══════════════════════════════════════════════════════════
+// WIN MODAL
+// ═══════════════════════════════════════════════════════════
+function showWinModal(prize) {
+  const tc = getTierColor(prize.tier);
+
+  // Coin visual
+  const coinVis = document.getElementById('win-coin-vis');
+  coinVis.style.background = `radial-gradient(circle at 35% 30%, ${lighten(tc.rim, 0.35)}, ${tc.rim} 50%, ${tc.inner} 100%)`;
+  coinVis.style.boxShadow  = `0 0 0 3px ${tc.rim}, 0 0 30px ${tc.glow}, inset 0 2px 4px rgba(255,255,255,0.25), inset 0 -2px 4px rgba(0,0,0,0.3)`;
+  coinVis.innerHTML = prize.symbol === 'MYSTERY'
+    ? `<div style="font-size:40px">?</div>`
+    : `<div class="coin-symbol">${prize.symbol}</div><div class="coin-amount">${prize.amount > 0 ? prize.amount : '?'}</div>`;
+
+  const amountEl = document.getElementById('win-amount-text');
+  const titleEl  = document.getElementById('win-title');
+  const subtitleEl = document.getElementById('win-subtitle');
+
+  if (prize.symbol === 'MYSTERY') {
+    const actual = PRIZES[Math.floor(Math.random() * (PRIZES.length - 1))]; // exclude mystery
+    state.pendingPrize.resolvedPrize = actual;
+    amountEl.textContent  = actual.label;
+    titleEl.textContent   = 'Mystery Unlocked!';
+    subtitleEl.textContent = `The vault reveals: ${actual.label}`;
+  } else if (prize.symbol === 'TICKET') {
+    amountEl.textContent  = '+1 Ticket';
+    titleEl.textContent   = 'Free Spin!';
+    subtitleEl.textContent = 'A ticket has been added to your stash.';
+  } else {
+    amountEl.textContent  = prize.label;
+    const tierLabel = prize.tier === 'jackpot' ? '🔥 JACKPOT!' : prize.tier === 'rare' ? '✦ Rare Find' : 'Collected';
+    titleEl.textContent   = tierLabel;
+    subtitleEl.textContent = `${prize.amount.toLocaleString()} ORY is ready to mint into your vault.`;
+  }
+
+  openModal('modal-win');
+}
+
+// ═══════════════════════════════════════════════════════════
+// COLLECT (Mint Animation)
+// ═══════════════════════════════════════════════════════════
+function doCollect() {
+  closeModal('modal-win');
+  const { prize, resolvedPrize } = state.pendingPrize;
+  const actual = resolvedPrize || prize;
+
+  // Apply prize
+  if (actual.symbol === 'TICKET') {
+    state.tickets += actual.amount;
+  } else if (actual.symbol !== 'MYSTERY') {
+    state.balance += actual.amount;
+  }
+
+  // Record history
+  const histEntry = {
+    label: actual.label,
+    symbol: actual.symbol,
+    amount: actual.amount,
+    tier: actual.tier,
+    time: timeStr(),
+  };
+  state.history.unshift(histEntry);
+  if (state.history.length > 50) state.history.pop();
+
+  updateUI();
+  saveSession();
+  state.pendingPrize = null;
+
+  // Mint animation
+  if (!reducedMotion() && actual.symbol !== 'TICKET') {
+    launchMintCoin(actual);
+  } else {
+    popBalance();
+  }
+
+  // Re-enable spin btn
+  document.getElementById('btn-spin').disabled = false;
+}
+
+function launchMintCoin(prize) {
+  const tc = getTierColor(prize.tier);
+  const balEl = document.getElementById('balance-display');
+  const balRect = balEl.getBoundingClientRect();
+
+  const coin = document.createElement('div');
+  coin.className = 'mint-coin';
+  coin.style.cssText = `
+    left: ${window.innerWidth / 2 - 32}px;
+    top:  ${window.innerHeight / 2 - 32}px;
+    background: radial-gradient(circle at 35% 30%, ${lighten(tc.rim, 0.35)}, ${tc.rim} 50%, ${tc.inner} 100%);
+    box-shadow: 0 0 0 3px ${tc.rim}, 0 0 24px ${tc.glow};
+  `;
+  coin.textContent = prize.symbol;
+  document.body.appendChild(coin);
+
+  const keyframes = [
+    { transform: 'scale(1) rotateY(0deg)', opacity: 1, offset: 0 },
+    { transform: 'scale(1.4) rotateY(90deg)', opacity: 1, offset: 0.3 },
+    { transform: 'scale(1.4) rotateY(90deg)', opacity: 1, offset: 0.45 },
+    {
+      transform: `scale(0.3) translate(${balRect.left - window.innerWidth / 2 + 16}px, ${balRect.top - window.innerHeight / 2 + 8}px) rotateY(0deg)`,
+      opacity: 0.6,
+      offset: 0.85
+    },
+    {
+      transform: `scale(0) translate(${balRect.left - window.innerWidth / 2 + 16}px, ${balRect.top - window.innerHeight / 2 + 8}px)`,
+      opacity: 0,
+      offset: 1
+    },
+  ];
+
+  const anim = coin.animate(keyframes, { duration: 900, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'forwards' });
+  anim.onfinish = () => {
+    coin.remove();
+    popBalance();
+  };
+}
+
+function popBalance() {
+  const el = document.getElementById('balance-display');
+  el.classList.remove('balance-pop');
+  void el.offsetWidth;
+  el.classList.add('balance-pop');
+}
+
+// ═══════════════════════════════════════════════════════════
+// HISTORY MODAL
+// ═══════════════════════════════════════════════════════════
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  if (!state.history.length) {
+    list.innerHTML = '<p class="history-empty">No spins yet — hit that wheel!</p>';
+    return;
+  }
+  list.innerHTML = state.history.map(h => {
+    const tc = getTierColor(h.tier);
+    return `
+      <div class="history-item">
+        <div class="hi-dot" style="background:${tc.rim};box-shadow:0 0 6px ${tc.glow}"></div>
+        <div class="hi-info">
+          <div class="hi-prize" style="color:${tc.rim}">${h.label}</div>
+          <div class="hi-time">${h.time}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// BUY TICKETS
+// ═══════════════════════════════════════════════════════════
+function buyTickets() {
+  if (state.balance < TICKET_COST_ORY) {
+    alert('Not enough ORY to buy tickets.');
+    return;
+  }
+  state.balance -= TICKET_COST_ORY;
+  state.tickets += TICKETS_PER_BUY;
+  updateUI();
+  saveSession();
+  closeModal('modal-oot');
+  document.getElementById('btn-spin').disabled = false;
+}
+
+function watchForTicket() {
+  // Simulated reward
+  state.tickets += 1;
+  updateUI();
+  saveSession();
+  closeModal('modal-oot');
+  document.getElementById('btn-spin').disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════
+// EVENT BINDINGS
+// ═══════════════════════════════════════════════════════════
+document.getElementById('btn-connect').addEventListener('click', doLogin);
+
+document.getElementById('btn-spin').addEventListener('click', spinWheel);
+
+document.getElementById('btn-logout').addEventListener('click', () => {
+  const chip = document.getElementById('logout-chip');
+  chip.classList.contains('open') ? closeLogoutChip() : openLogoutChip();
+});
+document.getElementById('btn-logout-cancel').addEventListener('click', closeLogoutChip);
+document.getElementById('btn-logout-confirm').addEventListener('click', doLogout);
+
+document.getElementById('btn-history').addEventListener('click', () => {
+  renderHistory();
+  openModal('modal-history');
+});
+document.getElementById('btn-history-close').addEventListener('click', () => closeModal('modal-history'));
+
+document.getElementById('btn-collect').addEventListener('click', doCollect);
+document.getElementById('btn-spin-again').addEventListener('click', () => {
+  closeModal('modal-win');
+  doCollect();
+  // Wait for collect then auto-spin would be confusing; just close & re-enable
+  document.getElementById('btn-spin').disabled = false;
+});
+
+document.getElementById('btn-buy-tickets').addEventListener('click', buyTickets);
+document.getElementById('btn-watch-ad').addEventListener('click', watchForTicket);
+document.getElementById('btn-oot-close').addEventListener('click', () => closeModal('modal-oot'));
+
+// Close modals on overlay click
+['modal-oot','modal-win','modal-history'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => {
+    if (e.target === document.getElementById(id)) closeModal(id);
+  });
+});
+
+// Close logout chip on outside click
+document.addEventListener('click', e => {
+  const chip = document.getElementById('logout-chip');
+  const btn  = document.getElementById('btn-logout');
+  if (chip.classList.contains('open') && !chip.contains(e.target) && e.target !== btn) {
+    closeLogoutChip();
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+// RESPONSIVE WHEEL RESIZE
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('resize', () => {
+  if (state.loggedIn) resizeWheel();
+});
+
+// Initial draw to prevent flash
+drawWheel(0);
+</script>
+</body>
+</html>
