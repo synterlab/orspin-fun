@@ -57,10 +57,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Manrop
 .lcard::after{content:'';position:absolute;bottom:-60px;left:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(45,212,191,.09) 0%,transparent 70%);pointer-events:none;}
 
 .brand{display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;z-index:1;}
-.brand-icon{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:76px;height:76px;}
-.brand-ory{font-family:'Baloo 2',sans-serif;font-size:40px;font-weight:900;background:linear-gradient(135deg,#FFE566 0%,#F0B429 45%,#b47210 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 18px rgba(240,180,41,.7));animation:ory-pulse 2.8s ease-in-out infinite;}
-@keyframes ory-pulse{0%,100%{filter:drop-shadow(0 0 14px rgba(240,180,41,.6));}50%{filter:drop-shadow(0 0 36px rgba(240,180,41,1)) drop-shadow(0 0 70px rgba(240,180,41,.45));}}
-.orynth-badge{display:block;margin:0 auto;opacity:.95;transition:opacity .2s,transform .2s;border-radius:12px;}
+.brand-icon{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:82px;height:82px;}
+.brand-logo-img{width:80px;height:80px;border-radius:22px;object-fit:cover;box-shadow:0 0 0 2px rgba(240,180,41,.35),0 0 28px rgba(240,180,41,.5),0 8px 24px rgba(0,0,0,.6);animation:logo-float 3.5s ease-in-out infinite;}
+@keyframes logo-float{0%,100%{transform:translateY(0) scale(1);box-shadow:0 0 0 2px rgba(240,180,41,.35),0 0 28px rgba(240,180,41,.5),0 8px 24px rgba(0,0,0,.6);}50%{transform:translateY(-5px) scale(1.02);box-shadow:0 0 0 2px rgba(240,180,41,.5),0 0 44px rgba(240,180,41,.75),0 18px 36px rgba(0,0,0,.5);}}
+.orynth-badge-wrap{display:flex;justify-content:center;position:relative;z-index:1;}
+.orynth-badge{display:block;border-radius:14px;filter:invert(1) hue-rotate(180deg) brightness(1.1);opacity:.82;transition:opacity .2s,transform .2s;}
 .orynth-badge:hover{opacity:1;transform:scale(1.04);}
 .builder-credit{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:var(--muted);position:relative;z-index:1;}
 .builder-credit a{color:var(--dim);text-decoration:none;font-weight:700;letter-spacing:.03em;transition:color .15s;}
@@ -68,8 +69,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Manrop
 @keyframes lcard-in{from{opacity:0;transform:translateY(32px) scale(.96);}to{opacity:1;transform:translateY(0) scale(1);}}
 @keyframes btn-shine{0%{left:-100%;}100%{left:220%;}}
 .btn-enter::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);width:60%;left:-100%;animation:btn-shine 2.4s ease-in-out infinite 1.2s;border-radius:inherit;}
-.brand-name{font-family:'Baloo 2',sans-serif;font-size:35px;font-weight:900;letter-spacing:-.5px;background:linear-gradient(135deg,#FFE566 0%,#FFD166 30%,#F0B429 65%,#b87510 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 14px rgba(240,180,41,.4));}
-.brand-sub{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);}
+.brand-name{font-family:'Baloo 2',sans-serif;font-size:32px;font-weight:900;letter-spacing:-.5px;color:#F1F5F9;text-shadow:0 2px 18px rgba(240,180,41,.25),0 0 40px rgba(45,212,191,.1);}
+.brand-sub{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
 
 .fg{width:100%;position:relative;z-index:1;}
 .fl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);display:block;margin-bottom:7px;}
@@ -282,9 +283,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Manrop
 <div id="s-login" class="scr on">
 <div class="lcard">
   <div class="brand">
-    <div class="brand-icon"><span class="brand-ory">ORY</span></div>
+    <div class="brand-icon"><img class="brand-logo-img" src="https://raw.githubusercontent.com/synterlab/orspin-fun/main/logo.png" alt="OrSpin" draggable="false"/></div>
     <div class="brand-name">OrSpin.fun</div>
-    <div class="brand-sub">Orynth Lucky Spin · Win ORY Tokens</div>
+    <div class="brand-sub">Spin to Win · Claim ORY Tokens</div>
   </div>
   <div class="fg">
     <label class="fl" for="ni">Your Name</label>
@@ -300,9 +301,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Manrop
     <div class="perk"><div class="pd"></div><span>No wallet needed</span></div>
     <div class="perk"><div class="pd"></div><span>Win ORY tokens</span></div>
   </div>
-  <a href="https://orynth.dev/projects/orspin" target="_blank" rel="noopener" style="display:block;text-align:center;">
-    <img class="orynth-badge" src="https://orynth.dev/api/badge/orspin?theme=light&style=default" alt="Featured on Orynth" width="200" height="62" loading="lazy"/>
-  </a>
+  <div class="orynth-badge-wrap">
+    <a href="https://orynth.dev/projects/orspin" target="_blank" rel="noopener">
+      <img class="orynth-badge" src="https://orynth.dev/api/badge/orspin?theme=dark&style=default" alt="Featured on Orynth" width="200" height="62" loading="lazy"/>
+    </a>
+  </div>
   <div class="builder-credit">
     <span>Built by</span>
     <a href="https://x.com/AlexanderRothr" target="_blank" rel="noopener">@AlexanderRothr</a>
@@ -467,14 +470,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Manrop
 // Each coin on the wheel represents ORY (Orynth native token)
 // Edit amounts and weights to match live tokenomics
 const PRIZES = [
-  { label:'100 ORY',   sym:'ORY', amt:100,  wt:11, tier:'common'  },
-  { label:'250 ORY',   sym:'ORY', amt:250,  wt:9,  tier:'common'  },
-  { label:'500 ORY',   sym:'ORY', amt:500,  wt:5,  tier:'rare'    },
-  { label:'1,000 ORY', sym:'ORY', amt:1000, wt:2,  tier:'rare'    },
-  { label:'5,000 ORY', sym:'ORY', amt:5000, wt:1,  tier:'jackpot' },
-  { label:'+2 Tickets',sym:'TIX', amt:2,    wt:8,  tier:'common'  },
-  { label:'50 ORY',    sym:'ORY', amt:50,   wt:14, tier:'common'  },
-  { label:'Mystery!',  sym:'?',   amt:0,    wt:6,  tier:'rare'    },
+  { label:'100',    sym:'ORY', amt:100,  wt:11, tier:'common',  clr:{a:'#6EF7C8',b:'#22D3A0',c:'#065e42',glow:'rgba(34,211,160,.85)'}  },
+  { label:'250',    sym:'ORY', amt:250,  wt:9,  tier:'common',  clr:{a:'#67E8F9',b:'#06B6D4',c:'#0c4a6e',glow:'rgba(6,182,212,.85)'}   },
+  { label:'500',    sym:'ORY', amt:500,  wt:5,  tier:'rare',    clr:{a:'#FDE68A',b:'#F59E0B',c:'#78350f',glow:'rgba(245,158,11,.9)'}   },
+  { label:'1K',     sym:'ORY', amt:1000, wt:2,  tier:'rare',    clr:{a:'#FCA5A5',b:'#EF4444',c:'#7f1d1d',glow:'rgba(239,68,68,.95)'}   },
+  { label:'5K',     sym:'ORY', amt:5000, wt:1,  tier:'jackpot', clr:{a:'#FF9EEE',b:'#D946EF',c:'#581c87',glow:'rgba(217,70,239,1)'}    },
+  { label:'+2 TIX', sym:'TIX', amt:2,    wt:8,  tier:'common',  clr:{a:'#A5B4FC',b:'#6366F1',c:'#1e1b4b',glow:'rgba(99,102,241,.85)'} },
+  { label:'50',     sym:'ORY', amt:50,   wt:14, tier:'common',  clr:{a:'#86EFAC',b:'#22C55E',c:'#14532d',glow:'rgba(34,197,94,.85)'}   },
+  { label:'?',      sym:'?',   amt:0,    wt:6,  tier:'rare',    clr:{a:'#FCD34D',b:'#F97316',c:'#7c2d12',glow:'rgba(249,115,22,.9)'}   },
 ];
 
 const SHOP = [
@@ -592,7 +595,7 @@ function lighten(hex,a){
 
 function drawCoin(cx,cy,R,prize,alpha){
   alpha=alpha===undefined?1:alpha;
-  const tc=T[prize.tier],cr=R*.283;
+  const tc=prize.clr||T[prize.tier],cr=R*.283;
 
   // drop shadow
   wx.save();
@@ -637,12 +640,13 @@ function drawCoin(cx,cy,R,prize,alpha){
   if(prize.sym==='?'){
     wx.font='bold '+(cr*.9)+"px 'Space Mono',monospace";wx.fillText('?',0,0);
   } else if(prize.sym==='TIX'){
-    wx.font='bold '+(cr*.46)+"px 'Space Mono',monospace";wx.fillText('TIX',0,-cr*.2);
-    wx.font='900 '+(cr*.5)+"px 'Baloo 2',sans-serif";wx.fillText('+'+prize.amt,0,cr*.28);
+    wx.font='bold '+(cr*.46)+"px 'Space Mono',monospace";wx.fillText('TIX',0,-cr*.22);
+    wx.font='900 '+(cr*.56)+"px 'Baloo 2',sans-serif";wx.fillText('+'+prize.amt,0,cr*.3);
   } else {
-    wx.font='bold '+(cr*.44)+"px 'Space Mono',monospace";wx.fillText('ORY',0,-cr*.22);
-    const a=prize.amt>=1000?prize.amt/1000+'K':String(prize.amt);
-    wx.font='900 '+(cr*.52)+"px 'Baloo 2',sans-serif";wx.fillText(a.length>5?a.slice(0,5):a,0,cr*.28);
+    // Show amount big, no ORY label — cleaner look
+    const a=prize.label||String(prize.amt);
+    wx.font='900 '+(cr*(a.length>2?.68:.78))+"px 'Baloo 2',sans-serif";
+    wx.fillText(a,0,cr*.1);
   }
   wx.restore();
 }
@@ -653,7 +657,7 @@ function drawWheel(angle){
 
   PRIZES.forEach((p,i)=>{
     const st=angle+i*SL-Math.PI/2,en=st+SL,mid=st+SL/2;
-    const tc=T[p.tier];
+    const tc=p.clr||T[p.tier];
     const ccx=cx+Math.cos(mid)*R*.62,ccy=cy+Math.sin(mid)*R*.62;
 
     // wedge: rich gradient blending from coin colour to deep background
@@ -780,11 +784,11 @@ function doSpin(){
   const curNorm=((S.angle%(2*Math.PI))+(2*Math.PI))%(2*Math.PI);
   const target=(((-Math.PI/2-(idx+.5)*SL)%(2*Math.PI))+(2*Math.PI))%(2*Math.PI);
   const delta=(target-curNorm+2*Math.PI)%(2*Math.PI);
-  const spins=14+Math.floor(Math.random()*7);
+  const spins=20+Math.floor(Math.random()*8);
   const totalRot=delta+spins*2*Math.PI;
 
   const fromAngle=S.angle;
-  const dur=rm()?50:9800+Math.random()*2200;
+  const dur=rm()?50:15000+Math.random()*4000;
   const startT=performance.now();
 
   const ringEl=document.getElementById('w-outer');
